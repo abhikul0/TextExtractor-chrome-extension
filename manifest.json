@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Text Extracter & Markdown Formatter",
+  "version": "1.0.0",
+  "description": "Extracts text from web pages and formats it as clean Markdown",
+  "permissions": ["activeTab", "scripting", "sidePanel"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Extract Text as Markdown"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
