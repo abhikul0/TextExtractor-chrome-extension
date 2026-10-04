@@ -12,14 +12,14 @@ All notable changes to the TextExtractor Chrome Extension.
 - **30-second timeout** - Prevents hanging on slow/unresponsive LLM servers
 - **Improved focus styling** - Green border and shadow when output textarea is focused
 - **Resizable output area** - Textarea can now be resized vertically
-
-### Added
-- **Markdown rendering** - Assistant responses now render markdown (headings, bold, italic, code, lists, blockquotes, etc.)
+- **Word wrap in output** - Long text lines now wrap properly in the output box
+- **Word wrap in markdown** - Assistant responses with markdown now wrap properly, including in code blocks
 
 ### Changed
 - **Text extraction** - Now stores extracted text in textarea instead of pre element for better editing
 - **Chat functionality** - Updated to use textarea value instead of pre content
 - **Error display** - Changed from `alert()` to inline error messages
+- **Markdown rendering** - Fixed to properly wrap text and handle overflow with zebra striping
 
 ## [0.1.0] - 2026-09-29
 

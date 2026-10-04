@@ -11,11 +11,10 @@ function escapeHtml(text) {
 // Parse markdown and render in container
 function renderMarkdown(markdownText, container) {
   let html = markdownText
-    // Escape HTML first
+    // Escape HTML first to prevent XSS
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    // Code blocks (fenced)
     .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
     // Inline code
     .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -61,10 +60,8 @@ function renderMarkdown(markdownText, container) {
     // Remove empty elements
     .replace(/<br \/>/g, '')
     // Add markdown class for styling
-    .replace(/(<h[1-3]>.*<\/h[1-3]>)|(<p>.*<\/p>|<ul>.*<\/ul>|<ol>.*<\/ol>|<pre>.*<\/pre>|<blockquote>.*<\/blockquote>|<hr \/>)/g, '<div class="markdown-body">$&</div>');
-  
-  container.innerHTML = html;
-}
+    container.innerHTML = html;
+    }
 
 // Extract visible text button
 document.getElementById('extract').addEventListener('click', async () => {
@@ -193,7 +190,8 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
       
       // Display the response with markdown formatting
       const assistantMessage = data.choices?.[0]?.message?.content || 'No response received';
-      responseDisplay.innerHTML = `[Assistant]:\n<markdown>${escapeHtml(assistantMessage)}</markdown>`;
+      responseDisplay.innerHTML = `[Assistant]:\n${assistantMessage}`;
+      renderMarkdown(assistantMessage, responseDisplay);
       
       // Update stats after chat
       updateStats(document.getElementById('output').value);

@@ -58,9 +58,9 @@
         background: #f8f9fa;
         border: 1px solid #e0e0e0;
         border-radius: 6px;
-        padding: 10px;
+        padding: 12px;
         font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
-        font-size: 12px;
+        font-size: 13px;
         line-height: 1.5;
         overflow-y: auto;
         white-space: pre-wrap;
@@ -69,6 +69,7 @@
         min-height: 80px;
         resize: vertical;
         outline: none;
+        overflow-zoom: visible;
       }
       
       #output:focus {
@@ -121,6 +122,8 @@
         overflow-y: auto;
         max-height: 400px;
         display: none;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       #chatResponse .markdown-body {
@@ -164,14 +167,20 @@
         padding: 10px;
         border-radius: 4px;
         overflow-x: auto;
+        overflow-y: visible;
         font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
         font-size: 0.85em;
         margin: 0.5em 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: break-word;
       }
       
       #chatResponse pre code {
         padding: 0;
         background: none;
+        white-space: pre-wrap;
+        word-wrap: break-word;
       }
       
       #chatResponse blockquote {
