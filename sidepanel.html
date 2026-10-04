@@ -66,6 +66,14 @@
         white-space: pre-wrap;
         word-break: break-word;
         max-height: 200px;
+        min-height: 80px;
+        resize: vertical;
+        outline: none;
+      }
+      
+      #output:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
       }
       
       .chat-section {
@@ -117,6 +125,26 @@
         display: none;
       }
       
+      #copyBtn {
+        padding: 6px 10px;
+        background: #666;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        transition: background 0.15s ease;
+      }
+      
+      #copyBtn:hover {
+        background: #555;
+      }
+      
+      #copyBtn:active {
+        background: #444;
+      }
+      
       hr {
         border: none;
         border-top: 1px solid #e0e0e0;
@@ -128,7 +156,9 @@
     <h2>Text Extractor & Chat</h2>
     
     <button id="extract">Extract visible text</button>
-    <pre id="output"></pre>
+    <span id="stats" style="font-size: 11px; color: #666;"></span>
+    <textarea id="output" placeholder="Extracted text will appear here..."></textarea>
+    <button id="copyBtn" title="Copy to clipboard">📋</button>
     
     <hr>
     
