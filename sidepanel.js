@@ -1,6 +1,71 @@
 // Configuration for LLaMA server
 const LLM_SERVER_URL = 'http://localhost:8080'; //8080
 
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Parse markdown and render in container
+function renderMarkdown(markdownText, container) {
+  let html = markdownText
+    // Escape HTML first
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Code blocks (fenced)
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Headers
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/_([^_]+)_/g, '<em>$1</em>')
+    // Inline markdown (underline, strikethrough)
+    .replace(/~~([^~]+)~~/g, '<del>$1</del>')
+    // Blockquotes
+    .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+    // Horizontal rules
+    .replace(/^---$/gm, '<hr />')
+    // Unordered lists
+    .replace(/^\* (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    // Ordered lists
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ol>$&</ol>')
+    // Paragraphs (split by double newlines)
+    .replace(/\n\n/g, '</p><p>')
+    // Clean up
+    .replace(/^<p><br><\/p>/, '')
+    .replace(/<p><br><\/p>$/, '')
+    .replace(/<p><br>/, '<p>')
+    .replace(/<br><\/p>$/, '')
+    .replace(/<\/p><p>/g, '<p>')
+    // Wrap paragraphs
+    .replace(/^(.+)$/gm, '<p>$1</p>')
+    // Clean up multiple paragraphs
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>\s*<\/p>/g, '')
+    // Fix list formatting
+    .replace(/<\/ul>(?=<ul>|<ol>)/g, '')
+    .replace(/<\/ol>(?=<ol>)/g, '')
+    // Remove empty elements
+    .replace(/<br \/>/g, '')
+    // Add markdown class for styling
+    .replace(/(<h[1-3]>.*<\/h[1-3]>)|(<p>.*<\/p>|<ul>.*<\/ul>|<ol>.*<\/ol>|<pre>.*<\/pre>|<blockquote>.*<\/blockquote>|<hr \/>)/g, '<div class="markdown-body">$&</div>');
+  
+  container.innerHTML = html;
+}
+
 // Extract visible text button
 document.getElementById('extract').addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -72,6 +137,12 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
     outputEl.value += '\n\n[You]: ' + userMessage;
     outputEl.scrollTop = outputEl.scrollHeight;
     
+    // If response display exists, scroll it to bottom too
+    const responseDisplay = document.getElementById('chatResponse');
+    if (responseDisplay) {
+      responseDisplay.scrollTop = responseDisplay.scrollHeight;
+    }
+    
     // Show loading indicator with spinner
     responseDisplay.textContent = '⏳ Connecting to LLM server...';
     responseDisplay.style.display = 'block';
@@ -120,12 +191,15 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
       
       const data = await response.json();
       
-      // Display the response
+      // Display the response with markdown formatting
       const assistantMessage = data.choices?.[0]?.message?.content || 'No response received';
-      responseDisplay.textContent = `[Assistant]:\n${assistantMessage}`;
+      responseDisplay.innerHTML = `[Assistant]:\n<markdown>${escapeHtml(assistantMessage)}</markdown>`;
       
       // Update stats after chat
       updateStats(document.getElementById('output').value);
+      
+      // Scroll to bottom of response
+      responseDisplay.scrollTop = responseDisplay.scrollHeight;
       
     } catch (fetchError) {
       // Better error messages for different failure scenarios

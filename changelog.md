@@ -13,6 +13,9 @@ All notable changes to the TextExtractor Chrome Extension.
 - **Improved focus styling** - Green border and shadow when output textarea is focused
 - **Resizable output area** - Textarea can now be resized vertically
 
+### Added
+- **Markdown rendering** - Assistant responses now render markdown (headings, bold, italic, code, lists, blockquotes, etc.)
+
 ### Changed
 - **Text extraction** - Now stores extracted text in textarea instead of pre element for better editing
 - **Chat functionality** - Updated to use textarea value instead of pre content
