@@ -51,6 +51,25 @@ This extension communicates with a local LLM server via the OpenAI-compatible ch
 
 ### Model Selection
 
+### Model Selection
+
+The extension defaults to the `qwen-0.8B` model. To change this:
+
+1. Open the extension's source code (`sidepanel.js`)
+2. Update the `model` parameter in line 58:
+   ```javascript
+   model: 'your-preferred-model-name'  # e.g., 'llama3', 'mistral', etc.
+   ```
+
+### Server URL Configuration
+
+You can now configure the LLM server URL directly from the extension UI:
+
+1. Open the extension side panel
+2. Click the **⚙️ Settings** button at the top
+3. Enter your server URL in the text field
+4. Click **Save Settings** or **Reset to Default**
+
 The extension defaults to the `qwen-0.8B` model. To change this:
 
 1. Open the extension's source code (`sidepanel.js`)
@@ -168,7 +187,7 @@ chrome-extension-sidepanel/
 ### Modifying the Extension
 
 1. Edit `sidepanel.js` to customize:
-   - LLM server URL (line 2)
+   - Default model name (line 58)
    - Default model name (line 58)
    - UI styles and behavior
 

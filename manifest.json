@@ -3,7 +3,7 @@
   "name": "Text Extracter & Markdown Formatter",
   "version": "1.0.0",
   "description": "Extracts text from web pages and formats it as clean Markdown",
-  "permissions": ["activeTab", "scripting", "sidePanel"],
+  "permissions": ["activeTab", "scripting", "sidePanel", "storage"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "Extract Text as Markdown"

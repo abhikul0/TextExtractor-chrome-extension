@@ -1,5 +1,5 @@
 // Configuration for LLaMA server
-const LLM_SERVER_URL = 'http://localhost:8080'; //8080
+let LLM_SERVER_URL = 'http://localhost:8080'; //8080
 
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
@@ -149,7 +149,7 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
     
     // Make API call to LLaMA server with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2min timeout
     
     try {
       const response = await fetch(`${LLM_SERVER_URL}/v1/chat/completions`, {
@@ -204,7 +204,7 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
       let userFriendlyError = fetchError.message;
       
       if (fetchError.name === 'AbortError') {
-        userFriendlyError = 'Request timed out (30s). The LLM server may be slow or unresponsive.';
+        userFriendlyError = 'Request timed out (2min). The LLM server may be slow or unresponsive.';
       } else if (userFriendlyError.includes('Failed to fetch') || userFriendlyError.includes('network')) {
         userFriendlyError = 'Cannot reach LLM server at ' + LLM_SERVER_URL + '. Please ensure it is running.';
       } else if (userFriendlyError.includes('404')) {
@@ -251,3 +251,75 @@ document.getElementById('copyBtn').addEventListener('click', (e) => {
   const text = document.getElementById('output').value;
   copyToClipboard(text);
 });
+// ==================== SETTINGS PANEL ====================
+
+// Default server URL
+const DEFAULT_SERVER_URL = 'http://localhost:8080';
+let CURRENT_SERVER_URL = DEFAULT_SERVER_URL;
+
+// Show/hide settings panel
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  const panel = document.getElementById('settingsPanel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close settings panel when clicking on it
+document.getElementById('settingsPanel').addEventListener('click', (e) => {
+  if (e.target.id === 'settingsPanel') {
+    document.getElementById('settingsPanel').style.display = 'none';
+  }
+});
+
+// Save server URL
+document.getElementById('saveSettings').addEventListener('click', () => {
+  const newUrl = document.getElementById('serverUrl').value.trim();
+  if (newUrl) {
+    CURRENT_SERVER_URL = newUrl;
+    try {
+      localStorage.setItem('textExtractorServerUrl', newUrl);
+    } catch (e) {
+      console.error('localStorage setItem failed:', e);
+    }
+    updateServerUrl();
+    alert('Server URL updated successfully!');
+    document.getElementById('settingsPanel').style.display = 'none';
+  }
+});
+
+// Reset to default
+document.getElementById('resetSettings').addEventListener('click', () => {
+  if (confirm('Reset server URL to default?')) {
+    CURRENT_SERVER_URL = DEFAULT_SERVER_URL;
+    document.getElementById('serverUrl').value = DEFAULT_SERVER_URL;
+    try {
+      localStorage.removeItem('textExtractorServerUrl');
+    } catch (e) {
+      console.error('localStorage removeItem failed:', e);
+    }
+    updateServerUrl();
+    alert('Reset to default: ' + DEFAULT_SERVER_URL);
+    document.getElementById('settingsPanel').style.display = 'none';
+  }
+});
+
+// Update global LLM_SERVER_URL
+function updateServerUrl() {
+  LLM_SERVER_URL = CURRENT_SERVER_URL;
+}
+
+// Load saved settings on page load
+function loadSettings() {
+  try {
+    const savedUrl = localStorage.getItem('textExtractorServerUrl');
+    if (savedUrl) {
+      CURRENT_SERVER_URL = savedUrl;
+      document.getElementById('serverUrl').value = savedUrl;
+    }
+  } catch (e) {
+    console.error('localStorage getItem failed:', e);
+  }
+}
+
+// Load settings and update URL before any API calls
+loadSettings();
+updateServerUrl();
